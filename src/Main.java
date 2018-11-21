@@ -4,24 +4,13 @@ import java.sql.*;
 public class Main {
 
 	static Connection conn = null;
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException  {
 		// TODO Auto-generated method stub
-		Statement stmt = null;
+		Statement stmt = null; 
 		try {
-            // The newInstance() call is a work around for some
-            // broken Java implementations
-
-            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-        } catch (Exception ex) {
-            // handle the error
-        }
-		try {
-			
 		    conn =
-		       DriverManager.getConnection("jdbc:mysql://localhost/referat?useLegacyDatetimeCode=false&serverTimezone=America/New_York&" +
+		       DriverManager.getConnection("jdbc:mysql://localhost/referat?serverTimezone=Europe/Vienna&" +
 		                                   "user=referat&password=!Hallo123");
-
-		    // Do something with the Connection
 
 		} catch (SQLException ex) {
 		    // handle any errors
@@ -31,19 +20,34 @@ public class Main {
 		}
 		
 		printData();
+		System.out.println("Insert Into");
+		stmt = conn.createStatement();
+		String sql = "INSERT INTO customer (name, surname, address) VALUES ('Max', 'Müller', 'Grazerstraße 47')";
+	    stmt.executeUpdate(sql);
+	    printData();
+	    
+	    System.out.println("Update Data");
+	    sql = "UPDATE customer set name='Mueller' where name='Müller'";
+	    stmt = conn.createStatement();
+	    stmt.executeUpdate(sql);
+	    printData();
+	    conn.close();
 	}
 	
-	public static void printData() throws SQLException {
+	public static void printData() {
 		Statement stmt;
-		stmt = conn.createStatement();
-	
-
-	    String sql = "SELECT * FROM offices";
-	    ResultSet rs = stmt.executeQuery(sql);
-	      
-	    while(rs.next()){
-	    	System.out.println(rs.getInt("officeCode") + "\t" + rs.getString("city") + "\t" + rs.getString("phone"));
-	    }
+		try {
+			stmt = conn.createStatement();
+			String sql = "SELECT * FROM customer";
+		    ResultSet rs = stmt.executeQuery(sql);
+		      
+		    while(rs.next()){
+		    	System.out.println(rs.getInt("id") + "\t" + rs.getString("surname")+ 
+		    			"\t" + rs.getString("name") + "\t" + rs.getString("address"));
+		    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
